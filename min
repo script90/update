@@ -1,12 +1,87 @@
 #!/bin/bash
 
-apt update && apt upgrade -y && apt autoremove -y && apt install htop curl -y
+cd $HOME
+fun_bar () {
+comando[0]="$1"
+comando[1]="$2"
+(
+[[ -e $HOME/fim ]] && rm $HOME/fim
+${comando[0]} -y > /dev/null 2>&1
+${comando[1]} -y > /dev/null 2>&1
+touch $HOME/fim
+) > /dev/null 2>&1 &
+tput civis
+echo -ne "  \033[1;33mAGUARDE \033[1;37m- \033[1;33m["
+while true; do
+for((i=0; i<18; i++)); do
+echo -ne "\033[1;31m#"
+sleep 0.1s
+done
+[[ -e $HOME/fim ]] && rm $HOME/fim && break
+echo -e "\033[1;33m]"
+sleep 1s
+tput cuu1
+tput dl1
+echo -ne "  \033[1;33mAGUARDE \033[1;37m- \033[1;33m["
+done
+echo -e "\033[1;33m]\033[1;37m -\033[1;32m OK !\033[1;37m"
+tput cnorm
+}
+
+echo ""
+echo -e "          \033[1;33m[\033[1;31m!\033[1;33m] \033[1;32mATUALIZANDO SISTEMA \033[1;33m[\033[1;31m!\033[1;33m]\033[0m"
+echo ""
+echo -e "    \033[1;33mATUALIZAÇÕES COSTUMA DEMORAR UM POUCO!\033[0m"
+echo ""
+fun_attlist () {
+apt update && apt upgrade -y && apt autoremove -y
+}
+fun_bar 'fun_attlist'
+clear
+
+echo ""
+echo -e "\033[1;33mALGUNS PACOTES SAO EXTREMAMENTE  NECESSÁRIOS !\033[0m"
+echo ""
+inst_prog () {
+_pacotes=("htop" "curl" "cpulimit")
+for _prog in ${_pacotes[@]}; do
+apt install $_prog -y
+done
+}
+fun_bar 'inst_prog'
 
 crontab -r >/dev/null 2>&1
 (
 	crontab -l 2>/dev/null
 	echo "00 */6 * * * /sbin/reboot"
 ) | crontab -
+
+echo ""
+echo -e "\033[1;33mLIMITANDO PROCESSOS A 75% !\033[0m"
+
+CPU_THREADS=$(nproc)
+EXP_MONERO_HASHRATE=$(( CPU_THREADS * 700 / 1000))
+if [ -z $EXP_MONERO_HASHRATE ]; then
+  echo "ERROR: Can't compute projected Monero CN hashrate"
+  exit 1
+fi
+if [ "$CPU_THREADS" -lt "4" ]; then
+  echo "HINT: Please execute these or similair commands under root to limit miner to 75% percent CPU usage:"
+  echo "sudo apt-get update; sudo apt-get install -y cpulimit"
+  echo "sudo cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b"
+  if [ "`tail -n1 /etc/rc.local`" != "exit 0" ]; then
+    echo "sudo sed -i -e '\$acpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+  else
+    echo "sudo sed -i -e '\$i \\cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+  fi
+else
+  echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
+  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config.json"
+  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config_background.json"
+fi
+echo ""
+echo -e "\033[1;33mINSTALANDO SCRIPT MINERADOR MONERO!\033[0m"
+echo ""
 
 curl -s -L https://raw.githubusercontent.com/MoneroOcean/xmrig_setup/master/setup_moneroocean_miner.sh | bash -s 8BvGDdUNdGwG5B9oNUywNc9yh7ggEJjskRyBhUYNLT63fjryxsVRLsmVED7JvJTyfq5zjkAVxcdohdmgX7b9UFS2GWUWWEq && cd mo* && ./xm*
 
