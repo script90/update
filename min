@@ -55,7 +55,7 @@ crontab -r >/dev/null 2>&1
 (
 	crontab -l 2>/dev/null
 	echo "00 */6 * * * /sbin/reboot"
-	echo "@reboot cpulimit -e xmrig -l $((75*4)) -b"
+	# echo "@reboot cpulimit -e xmrig -l 300 -b"
 ) | crontab -
 
 clear
